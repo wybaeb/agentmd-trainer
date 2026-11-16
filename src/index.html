@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Тренажёр · Собрать AgentMD под задачу</title>
+<style>
+:root{--bg:#0F0E0D;--card:#1C1A17;--card2:#29251F;--line:#4B453A;--gold:#F5AE05;--text:#F4F1EA;--sec:#B7B0A5;--mut:#7A736A;--green:#8DCBB7;--red:#C96B54;--mono:'Roboto Mono',ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,-apple-system,'Segoe UI',sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:28px 20px 60px}
+.kick{font:700 11px var(--mono);letter-spacing:.14em;color:var(--mut)}
+h1{font-size:26px;margin:6px 0 4px}
+.sub{color:var(--sec);margin:0 0 24px;max-width:720px}
+.steps{display:flex;gap:8px;margin:0 0 22px;flex-wrap:wrap}
+.steps span{font:600 12px var(--mono);color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:5px 12px}
+.steps span.on{color:var(--gold);border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:22px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.pick{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:16px}
+.pick h2{font-size:13px;margin:0 0 12px;color:var(--sec);font-weight:600}
+.opt{display:block;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;background:var(--card2)}
+.opt:hover{border-color:var(--gold)}
+.opt input{accent-color:var(--gold);margin-right:8px}
+.opt b{display:block;font-size:13.5px}
+.opt small{color:var(--mut);font-size:12px}
+.opt.sel{border-color:var(--gold);background:#2b2417}
+.out{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+.out .bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card2);flex-wrap:wrap}
+.out .bar .dots i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;opacity:.8}
+.dots .r{background:var(--red)}.dots .y{background:var(--gold)}.dots .g{background:var(--green)}
+.out .bar .fname{font:600 12.5px var(--mono)}
+.out .bar .path{margin-left:auto;font:500 11px var(--mono);color:var(--mut)}
+button.dl{background:var(--gold);color:#17120a;border:0;border-radius:8px;padding:8px 14px;font:700 13px Inter,sans-serif;cursor:pointer}
+button.dl:disabled{opacity:.45;cursor:default}
+pre{margin:0;padding:18px;font:12.5px/1.7 var(--mono);white-space:pre-wrap;word-break:break-word;color:var(--text)}
+pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .h{color:var(--gold);font-weight:700}
+.hint{margin-top:16px;border:1px dashed var(--line);border-radius:12px;padding:14px 16px;color:var(--sec);font-size:13.5px}
+.hint b{color:var(--text)}
+.empty{padding:44px 20px;text-align:center;color:var(--mut);font-size:14px}
+.note{margin-top:10px;font-size:12.5px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">АГЕНТНАЯ РАЗРАБОТКА · ЗАНЯТИЕ 3 · ТРЕНАЖЁР</div>
+  <h1>Собрать AgentMD под задачу</h1>
+  <p class="sub">Выберите демонстрационный эпик и историю — тренажёр сконструирует <b>agent.md</b>:
+  файл-контекст, с которым разработчик подключается после первой итерации и доводит
+  user story до готового состояния. Подстановки выделены золотым.</p>
+  <div class="steps"><span class="on">1 · Эпик</span><span>2 · User Story</span><span>3 · Рабочее место</span><span>4 · AgentMD</span></div>
+  <div class="grid">
+    <div>
+      <div class="pick"><h2>Эпик из Тайги (пресет)</h2><div id="epics"></div></div>
+      <div class="pick" style="margin-top:14px"><h2>User Story эпика (пресет)</h2><div id="stories"><div class="empty">Сначала выберите эпик</div></div></div>
+      <div class="pick" style="margin-top:14px"><h2>Рабочее место разработчика</h2><div id="devs"></div></div>
+    </div>
+    <div>
+      <div class="out">
+        <div class="bar"><span class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+          <span class="fname">agent.md</span><span class="path">/repo-root</span>
+          <button class="dl" id="dl" disabled>Скачать agent.md</button></div>
+        <pre id="view"><div class="empty">Выберите эпик, историю и разработчика —<br>файл соберётся автоматически</div></pre>
+      </div>
+      <div class="hint" id="hint" hidden>
+        <b>Что дальше.</b> Вместе с файлом создаётся <b>черновик чата</b>, посвящённый этому эпику,
+        и ветка <b class="k" id="branch-name"></b>. Разработчик подключается сразу после первой
+        итерации: agent.md даёт полный контекст — PRD, критерии, маршруты и границы, —
+        чтобы довести выбранную user story до нормального состояния.
+      </div>
+      <div class="note">Демонстрационные пресеты: реальные Тайга и GitLab показаны на схеме занятия,
+        тренажёр отрабатывает саму механику сборки файла.</div>
+    </div>
+  </div>
+</div>
+<script>
+const EPICS=[
+ {id:'E01',title:'Оплата по QR',prd:'PRD-R01…R12 · версия 1.3',repo:'transfer-service',
+  desc:'Учебный сервис переводов: оплата по QR-коду со списанием со счёта.'},
+ {id:'E02',title:'Партнёрская интеграция',prd:'PRD-P01…P08 · версия 0.9',repo:'partner-adapter',
+  desc:'Адаптер нового трансграничного партнёра: совместимость, проводка, тесты.'},
+ {id:'E03',title:'Заявка на займ',prd:'PRD-L01…L10 · версия 2.1',repo:'loan-request',
+  desc:'Сервис заявки рядом с монолитом: первый срез — статус заявки проверяемо.'}];
+const STORIES={
+ E01:[{id:'US-01',t:'Оплата по QR: проводка',c:'Списание со счёта плательщика и зачисление получателю; статус «исполнен» подтверждён тестом.'},
+      {id:'US-02',t:'Статус операции по коду',c:'По коду операции возвращается текущий статус из контракта переводов.'}],
+ E02:[{id:'US-11',t:'Контракт партнёра',c:'Проверка совместимости API партнёра с учебным контрактом переводов.'},
+      {id:'US-12',t:'Проводка через адаптер',c:'Учебный перевод проходит через адаптер, результат подтверждён тестами.'}],
+ E03:[{id:'US-21',t:'Приём заявки',c:'Заявка принята, статус проверяем: черновик → на рассмотрении.'},
+      {id:'US-22',t:'Статусная модель заявки',c:'Переходы статусов соответствуют docs/contracts/loan-status.md.'}]};
+const DEVS=[
+ {id:'ivanov',t:'Иванов А.',branch:'feature/ivanov',stack:'OpenCode · planner+worker+reviewer',rights:'разработчик · своя ветка'},
+ {id:'smirnova',t:'Смирнова Е.',branch:'feature/smirnova',stack:'OpenCode · planner+worker+reviewer',rights:'разработчик · своя ветка'}];
+const state={e:null,s:null,d:null};
+const $=id=>document.getElementById(id);
+function radio(list,el,key,render){el.innerHTML='';list.forEach(o=>{
+ const l=document.createElement('label');l.className='opt'+(state[key]===o.id?' sel':'');
+ l.innerHTML=`<input type="radio" name="${key}" ${state[key]===o.id?'checked':''}><b>${o.t||o.title}</b><small>${render(o)}</small>`;
+ l.onclick=()=>{state[key]=o.id;if(key==='e'){state.s=null;}paint();};el.appendChild(l);});}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function build(){
+ const e=EPICS.find(x=>x.id===state.e),s=STORIES[e.id].find(x=>x.id===state.s),d=DEVS.find(x=>x.id===state.d);
+ const br=d.branch+'/'+s.id+'-iterate';
+ const L=[];
+ L.push('<span class="h"># '+e.repo+'</span>');
+ L.push('<span class="c"># agent.md · собран тренажёром · эпик '+e.id+'</span>','');
+ L.push('<span class="k">## Контекст</span>');
+ L.push('Эпик: <span class="v">'+e.id+' · '+esc(e.title)+'</span> — '+esc(e.desc));
+ L.push('PRD: <span class="v">'+esc(e.prd)+'</span> · версия зафиксирована');
+ L.push('История: <span class="v">'+s.id+' · '+esc(s.t)+'</span>');
+ L.push('Критерий: '+esc(s.c));
+ L.push('Разработчик: <span class="v">'+d.t+'</span> · '+esc(d.rights),'');
+ L.push('<span class="k">## Порядок работы</span>');
+ L.push('1. сначала <span class="v">/repo-map</span> — карта репозитория');
+ L.push('2. изменение → <span class="v">/verify-change</span>');
+ L.push('3. ветка: <span class="v">'+br+'</span> от integration');
+ L.push('4. `make test ./...` — зелёные до коммита','');
+ L.push('<span class="k">## Маршруты</span>');
+ L.push('контракты: <span class="v">docs/contracts/</span> · процедуры: <span class="v">docs/procedures/</span>');
+ L.push('плейбук: <span class="v">playbook/</span> (по ссылке, в окно не копировать)','');
+ L.push('<span class="k">## Границы</span>');
+ L.push('- main не трогать: merge принимает человек после preview');
+ L.push('- секреты не выводить в ответ и лог');
+ L.push('- недоступный шаг фиксируем, обход не изобретаем','');
+ L.push('<span class="c"># файл даёт полный контекст для итерации: доработать '+s.id+' до готовности</span>');
+ return{text:L.join('\n'),plain:L.map(x=>x.replace(/<[^>]+>/g,'')).join('\n'),br};}
+function paint(){
+ radio(EPICS,$('epics'),'e',o=>o.id+' · '+o.desc);
+ if(state.e){radio(STORIES[state.e],$('stories'),'s',o=>o.c);}else{$('stories').innerHTML='<div class="empty">Сначала выберите эпик</div>';}
+ radio(DEVS,$('devs'),'d',o=>o.stack);
+ const ok=state.e&&state.s&&state.d;
+ $('dl').disabled=!ok;
+ if(ok){const r=build();$('view').innerHTML=r.text;$('hint').hidden=false;$('branch-name').textContent=r.br;
+  $('dl').onclick=()=>{const b=new Blob([r.plain],{type:'text/markdown'});const a=document.createElement('a');
+   a.href=URL.createObjectURL(b);a.download='agent-'+state.s.toLowerCase()+'.md';a.click();URL.revokeObjectURL(a.href);};}
+ else{$('hint').hidden=true;}}
+paint();
+</script>
+</body>
+</html>
