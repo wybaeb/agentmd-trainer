@@ -10,5 +10,5 @@ const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(S),iterations:IT,has
 const gz=await crypto.subtle.decrypt({name:'AES-GCM',iv:b(IV)},k,b(P));const ds=new Blob([gz]).stream().pipeThrough(new DecompressionStream('gzip'));
 const html=await new Response(ds).text();document.open();document.write(html);document.close();}
 const saved=document.cookie.match(/(?:^|; )adc=([^;]*)/);if(saved){open(decodeURIComponent(saved[1])).catch(()=>{});}
-f.onsubmit=async e=>{e.preventDefault();try{await open(pw.value);document.cookie='adc='+encodeURIComponent(pw.value)+';path=/;max-age=31536000;SameSite=Strict';}catch(x){document.getElementById('e').textContent='Пароль не подошёл'}};
+f.onsubmit=async e=>{e.preventDefault();try{await open(pw.value);try{document.cookie='adc='+encodeURIComponent(pw.value)+';path=/;max-age=31536000;SameSite=Strict';}catch(_){/* cookie может быть недоступен */}}catch(x){const el=document.getElementById('e');if(el)el.textContent='Пароль не подошёл';}};
 </script></body></html>
