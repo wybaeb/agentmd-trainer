@@ -18,14 +18,15 @@ h1{font-size:24px;margin:6px 0 4px}
 .sec{margin-bottom:16px}
 .sec h2{font-size:12px;margin:0 0 8px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 label.f{display:block;font-size:12.5px;color:var(--sec);margin:0 0 4px}
-select,input[type=text]{width:100%;padding:8px 10px;background:var(--card2);color:var(--text);border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit}
-select:focus,input[type=text]:focus{outline:none;border-color:var(--gold)}
+select,input[type=text],textarea{width:100%;padding:8px 10px;background:var(--card2);color:var(--text);border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit}
+textarea{resize:vertical;min-height:52px;font-size:12.5px}
+select:focus,input[type=text]:focus,textarea:focus{outline:none;border-color:var(--gold)}
 .custom{display:none;margin-top:8px;padding:9px 10px;border:1px dashed var(--line);border-radius:8px;background:#17140F}
 .custom.on{display:block}
-.custom input{margin-bottom:6px;font-size:12.5px}
+.custom input,.custom textarea{margin-bottom:6px;font-size:12.5px}
 .chk{display:flex;align-items:flex-start;gap:8px;padding:6px 0;cursor:pointer;font-size:13px}
 .chk input{accent-color:var(--gold);margin-top:2px}
-.chk small{display:block;color:var(--mut);font-size:11.5px}
+.chk small{display:block;color:var(--mut);font-size:11.5px;font-family:var(--mono)}
 .out{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden;display:flex;flex-direction:column}
 .out .bar{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--card2);flex-wrap:wrap}
 .out .bar .dots i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;opacity:.8}
@@ -35,11 +36,8 @@ select:focus,input[type=text]:focus{outline:none;border-color:var(--gold)}
 button{background:var(--gold);color:#17120a;border:0;border-radius:8px;padding:8px 13px;font:700 12.5px Inter,sans-serif;cursor:pointer}
 button.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
 button:disabled{opacity:.45;cursor:default}
-pre{margin:0;padding:16px 18px;font:12.3px/1.65 var(--mono);white-space:pre-wrap;word-break:break-word;color:var(--text);overflow-y:auto;max-height:calc(100vh - 300px)}
-pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .h{color:var(--gold);font-weight:700}
-.links{display:flex;gap:14px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--line);background:#17140F;font-size:12px}
-.links a{color:var(--gold);text-decoration:none}
-.links span{color:var(--mut)}
+pre{margin:0;padding:16px 18px;font:12.3px/1.65 var(--mono);white-space:pre-wrap;word-break:break-word;color:var(--text);overflow-y:auto;max-height:calc(100vh - 260px)}
+pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .u{color:#8FB6D9}
 .hint{margin-top:14px;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;color:var(--sec);font-size:13px}
 .hint b{color:var(--text)}
 .note{margin-top:10px;font-size:12px;color:var(--mut)}
@@ -50,9 +48,9 @@ pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .
   <div class="kick">АГЕНТНАЯ РАЗРАБОТКА · ЗАНЯТИЕ 3 · ТРЕНАЖЁР-КОНСТРУКТОР</div>
   <h1>Собрать AgentMD под задачу</h1>
   <p class="sub">Выбирайте заготовки или впишите свой эпик — файл <b>agent.md</b> собирается на лету.
-  Заготовки показывают, как настраивается AgentMD; конструктором можно пользоваться и для своих задач:
-  впишите ссылки на свой эпик в Тайге и свою историю в GitLab. В реальном пайплайне этот файл
-  создаётся <b>автоматически</b> — при переводе карточки в работу.</p>
+  Все ссылки кладутся прямо в файл: PRD эпика, история, задачи со статусами, репозитории блоков.
+  Файл создаётся внутри рабочего места разработчика — его имя не спрашиваем. В реальном пайплайне
+  этот файл появляется <b>автоматически</b> — при переводе карточки в работу.</p>
   <div class="layout">
     <div class="panel" id="panel">
       <div class="sec"><h2>1 · Эпик (Тайга)</h2>
@@ -60,7 +58,7 @@ pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .
         <select id="epic"></select>
         <div class="custom" id="epic-custom">
           <input type="text" id="epic-title" placeholder="Название своего эпика">
-          <input type="text" id="epic-link" placeholder="Ссылка на эпик в Тайге">
+          <input type="text" id="epic-link" placeholder="URL документа PRD эпика (Тайга)">
         </div>
       </div>
       <div class="sec"><h2>2 · User Story</h2>
@@ -68,18 +66,11 @@ pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .
         <select id="story"></select>
         <div class="custom" id="story-custom">
           <input type="text" id="story-title" placeholder="Название своей истории">
-          <input type="text" id="story-link" placeholder="Ссылка на историю в GitLab">
+          <input type="text" id="story-link" placeholder="URL истории (GitLab)">
+          <textarea id="story-tasks" placeholder="Задачи и статусы — по строке:&#10;US-X-T1 · в работе&#10;US-X-T2 · очередь"></textarea>
         </div>
       </div>
-      <div class="sec"><h2>3 · Рабочее место</h2>
-        <label class="f">Разработчик / харнесс</label>
-        <select id="dev"></select>
-        <div class="custom" id="dev-custom">
-          <input type="text" id="dev-name" placeholder="Имя разработчика">
-          <input type="text" id="dev-stack" placeholder="Харнесс и модели (например: OpenCode)">
-        </div>
-      </div>
-      <div class="sec"><h2>4 · Подключаемые блоки</h2><div id="blocks"></div></div>
+      <div class="sec"><h2>3 · Подключаемые блоки (URL репозиториев)</h2><div id="blocks"></div></div>
     </div>
     <div>
       <div class="out">
@@ -88,7 +79,6 @@ pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .
           <button class="ghost" id="dl-tpl">Скачать шаблон</button>
           <button id="dl" disabled>Скачать заполненный</button></div>
         <pre id="view"></pre>
-        <div class="links" id="links"></div>
       </div>
       <div class="hint">
         <b>Зачем это.</b> То, что здесь собирается вручную, в вашем контуре должно создаваться
@@ -103,73 +93,83 @@ pre .c{color:var(--mut)}pre .k{color:var(--gold)}pre .v{color:var(--green)}pre .
 <script>
 const EPICS=[
  {id:'E01',title:'Оплата по QR',prd:'PRD-R01…R12 · версия 1.3',repo:'transfer-service',
-  git:'https://github.com/krtch-sol/ai-advanced-course/tree/draft/lesson-03/lesson3/projects/qr-pay',
+  prdUrl:'https://git.example/train/docs/-/blob/main/prd/qr-pay.md',
   desc:'Учебный сервис переводов: оплата по QR-коду со списанием со счёта.'},
  {id:'E02',title:'Партнёрская интеграция',prd:'PRD-P01…P08 · версия 0.9',repo:'partner-adapter',
-  git:'https://github.com/krtch-sol/ai-advanced-course/tree/draft/lesson-03/lesson3/projects/partner',
+  prdUrl:'https://git.example/train/docs/-/blob/main/prd/partner.md',
   desc:'Адаптер нового трансграничного партнёра: совместимость, проводка, тесты.'},
  {id:'E03',title:'Заявка на займ',prd:'PRD-L01…L10 · версия 2.1',repo:'loan-request',
-  git:'https://github.com/krtch-sol/ai-advanced-course/tree/draft/lesson-03/lesson3/projects/loan',
+  prdUrl:'https://git.example/train/docs/-/blob/main/prd/loan.md',
   desc:'Сервис заявки рядом с монолитом: первый срез — статус заявки проверяемо.'}];
 const STORIES={
  E01:[{id:'US-01',t:'Оплата по QR: проводка',c:'Списание и зачисление; статус «исполнен» подтверждён тестом.',
-       git:'https://gitlab.example/train/transfer-service/-/issues/11'},
+       git:'https://gitlab.example/train/transfer-service/-/issues/11',
+       tasks:[['US-01-T1','в работе'],['US-01-T2','очередь']]},
       {id:'US-02',t:'Статус операции по коду',c:'По коду операции возвращается статус из контракта.',
-       git:'https://gitlab.example/train/transfer-service/-/issues/12'}],
+       git:'https://gitlab.example/train/transfer-service/-/issues/12',
+       tasks:[['US-02-T1','ревью']]}],
  E02:[{id:'US-11',t:'Контракт партнёра',c:'Проверка совместимости API партнёра с учебным контрактом.',
-       git:'https://gitlab.example/train/partner-adapter/-/issues/21'},
+       git:'https://gitlab.example/train/partner-adapter/-/issues/21',
+       tasks:[['US-11-T1','в работе'],['US-11-T2','очередь'],['US-11-T3','очередь']]},
       {id:'US-12',t:'Проводка через адаптер',c:'Учебный перевод через адаптер, результат подтверждён тестами.',
-       git:'https://gitlab.example/train/partner-adapter/-/issues/22'}],
+       git:'https://gitlab.example/train/partner-adapter/-/issues/22',
+       tasks:[['US-12-T1','готово']]}],
  E03:[{id:'US-21',t:'Приём заявки',c:'Заявка принята, статус проверяем: черновик → на рассмотрении.',
-       git:'https://gitlab.example/train/loan-request/-/issues/31'},
+       git:'https://gitlab.example/train/loan-request/-/issues/31',
+       tasks:[['US-21-T1','в работе'],['US-21-T2','очередь']]},
       {id:'US-22',t:'Статусная модель заявки',c:'Переходы статусов соответствуют docs/contracts/loan-status.md.',
-       git:'https://gitlab.example/train/loan-request/-/issues/32'}]};
-const DEVS=[
- {id:'ivanov',t:'Иванов А. · OpenCode',branch:'feature/ivanov',stack:'OpenCode · planner+worker+reviewer',rights:'разработчик · своя ветка'},
- {id:'smirnova',t:'Смирнова Е. · OpenCode',branch:'feature/smirnova',stack:'OpenCode · planner+worker+reviewer',rights:'разработчик · своя ветка'}];
+       git:'https://gitlab.example/train/loan-request/-/issues/32',
+       tasks:[['US-22-T1','очередь']]}]};
 const BLOCKS=[
- {id:'skills',t:'Скиллы и MCP-хаб',d:'подключение инструментов по имени',sec:'## Скиллы и MCP',
-  lines:[()=>'скиллы: `taiga` · `gitlab` · `поиск кода`',()=>'хаб: инструменты подключаются по имени, не простынёй в окне']},
- {id:'playbook',t:'Плейбук SDLC',d:'правила веток, гардрейлы, ревью',sec:'## Правила работы',
-  lines:[()=>'плейбук: playbook/ (ветки · тесты · ревью — по ссылке)']},
- {id:'design',t:'Макеты истории',d:'экраны и состояния из дизайн-системы',sec:'## Маршрут макетов',
-  lines:[()=>'макеты: design-system/ (экраны и состояния текущей истории)']},
- {id:'memory',t:'Память эпика',d:'чаты и решения предыдущих итераций',sec:'## Память эпика',
-  lines:[()=>'чаты: US-01 · решения и договорённости прошлых итераций']}];
-const CUSTOM={epic:false,story:false,dev:false};
+ {id:'skills',t:'Скиллы и MCP-хаб',d:'https://git.example/train/mcp-hub',
+  sec:'## Скиллы и MCP',url:'https://git.example/train/mcp-hub',
+  lines:[u=>'скиллы: `taiga` · `gitlab` · `поиск кода` — хаб: '+u]},
+ {id:'playbook',t:'Плейбук SDLC',d:'https://git.example/train/playbook',
+  sec:'## Правила работы',url:'https://git.example/train/playbook',
+  lines:[u=>'плейбук (ветки · гардрейлы · ревью): '+u]},
+ {id:'design',t:'Макеты истории',d:'https://git.example/train/design-system',
+  sec:'## Маршрут макетов',url:'https://git.example/train/design-system',
+  lines:[u=>'макеты (экраны и состояния): '+u]},
+ {id:'memory',t:'Память эпика',d:'https://git.example/train/epic-chats',
+  sec:'## Память эпика',url:'https://git.example/train/epic-chats',
+  lines:[u=>'чаты и решения прошлых итераций: '+u]}];
+const CUSTOM={epic:false,story:false};
 const $=id=>document.getElementById(id);
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function fill(select,items,withCustom){select.innerHTML='';
  items.forEach(o=>{const op=document.createElement('option');op.value=o.id;op.textContent=o.t||o.title;select.appendChild(op);});
  if(withCustom){const op=document.createElement('option');op.value='__custom';op.textContent='— свой вариант —';select.appendChild(op);}}
-function cur(){const e=$('epic').value,st=$('story').value,dv=$('dev').value;
- const epic=CUSTOM.epic?{id:'E?',title:$('epic-title').value||'Свой эпик',prd:'PRD (своя ссылка)',repo:'my-repo',
-   git:$('epic-link').value||'#',desc:$('epic-title').value||'свой эпик'}
+function parseTasks(str){return (str||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+ const m=l.split('·');return [(m[0]||'').trim(),(m[1]||'').trim()||'очередь'];});}
+function cur(){const e=$('epic').value,st=$('story').value;
+ const epic=CUSTOM.epic?{id:'E*',title:$('epic-title').value||'Свой эпик',prd:'PRD (своя ссылка)',repo:'my-repo',
+   prdUrl:$('epic-link').value||'#',desc:$('epic-title').value||'свой эпик'}
   :EPICS.find(x=>x.id===e);
- const src=CUSTOM.story?{id:'US-?',t:$('story-title').value||'Своя история',c:'критерии — по ссылке на задачу',
-   git:$('story-link').value||'#'}
-  :STORIES[epic.id.replace('E?','E01')] && !CUSTOM.epic?STORIES[epic.id].find(x=>x.id===st):{id:'US-?',t:$('story-title').value||'Своя история',c:'критерии — по ссылке',git:$('story-link').value||'#'};
- const dev=CUSTOM.dev?{id:'?',t:$('dev-name').value||'Разработчик',branch:'feature/'+(($('dev-name').value||'dev').split(' ')[0].toLowerCase()),stack:$('dev-stack').value||'OpenCode',rights:'разработчик · своя ветка'}
-  :DEVS.find(x=>x.id===dv);
- return {epic,story:src,dev};}
-function build(plain){
- const {epic,story,dev}=cur();
- const br=dev.branch+'/'+story.id.replace('?','X')+'-iterate';
- const on=BLOCKS.filter(bl=>$( 'b-'+bl.id).checked);
+ let story;
+ if(CUSTOM.story){story={id:'US-*',t:$('story-title').value||'Своя история',c:'критерии — по ссылке на задачу',
+   git:$('story-link').value||'#',tasks:parseTasks($('story-tasks').value)};}
+ else{const list=STORIES[epic.id]||[];story=list.find(x=>x.id===st)||list[0]||{id:'US-*',t:'Своя история',c:'',git:'#',tasks:[]};}
+ return {epic,story};}
+function build(){
+ const {epic,story}=cur();
+ const br='feature/'+story.id.replace('*','X')+'-iterate';
+ const on=BLOCKS.filter(bl=>$('b-'+bl.id).checked);
  const L=[];
  L.push('# '+epic.repo,'# agent.md · собран тренажёром · '+(CUSTOM.epic?'свой эпик':epic.id),'');
  L.push('## Контекст');
  L.push('Эпик: '+(CUSTOM.epic?epic.title:epic.id+' · '+epic.title+' — '+epic.desc));
- L.push('PRD: '+epic.prd+' · версия зафиксирована');
- L.push('История: '+story.id+' · '+story.t);
- L.push('Критерий: '+story.c);
- L.push('Разработчик: '+dev.t+' · '+dev.rights,'');
- L.push('## Порядок работы');
+ L.push('PRD эпика: '+epic.prdUrl);
+ L.push('User Story: '+story.t+' ('+story.id+')');
+ L.push('  '+story.git);
+ if(story.c)L.push('Критерий: '+story.c);
+ L.push('','## Задачи в работе');
+ story.tasks.forEach(tk=>L.push('- '+tk[0]+' · '+tk[1]));
+ L.push('','## Порядок работы');
  L.push('1. сначала /repo-map — карта репозитория');
  L.push('2. изменение → /verify-change');
  L.push('3. ветка: '+br+' от integration');
  L.push('4. `make test ./...` — зелёные до коммита','');
- on.forEach(bl=>{L.push(bl.sec);bl.lines.forEach(fn=>L.push(fn()));L.push('');});
+ on.forEach(bl=>{L.push(bl.sec);bl.lines.forEach(fn=>L.push(fn(bl.url)));L.push('');});
  L.push('## Границы');
  L.push('- main не трогать: merge принимает человек после preview');
  L.push('- секреты не выводить в ответ и лог');
@@ -179,36 +179,32 @@ function build(plain){
 function render(){
  const md=build();
  $('view').innerHTML=md.split('\n').map(line=>{
-  if(line.startsWith('# '))return '<span class="h">'+esc(line)+'</span>';
   if(line.startsWith('## '))return '<span class="k">'+esc(line)+'</span>';
+  if(/^https?:\/\//.test(line.trim()))return '<span class="u">'+esc(line)+'</span>';
+  if(line.startsWith('# '))return '<span class="h">'+esc(line)+'</span>';
   if(line.startsWith('#'))return '<span class="c">'+esc(line)+'</span>';
   return esc(line);}).join('\n');
- const {epic,story}=cur();
- $('links').innerHTML='<span>Ссылки:</span> <a href="'+esc(epic.git)+'" target="_blank">эпик · гит</a> <a href="'+esc(story.git)+'" target="_blank">история · GitLab</a>';
  $('dl').disabled=false;}
-// инициализация
-fill($('epic'),EPICS,true);fill($('story'),STORIES.E01,true);fill($('dev'),DEVS,true);
+fill($('epic'),EPICS,true);fill($('story'),STORIES.E01,true);
 $('blocks').innerHTML=BLOCKS.map(bl=>'<label class="chk"><input type="checkbox" id="b-'+bl.id+'" checked><span>'+bl.t+'<small>'+bl.d+'</small></span></label>').join('');
 $('epic').onchange=()=>{CUSTOM.epic=$('epic').value==='__custom';
  $('epic-custom').classList.toggle('on',CUSTOM.epic);
  if(!CUSTOM.epic)fill($('story'),STORIES[$('epic').value],true);
  CUSTOM.story=false;$('story-custom').classList.remove('on');render();};
 $('story').onchange=()=>{CUSTOM.story=$('story').value==='__custom';$('story-custom').classList.toggle('on',CUSTOM.story);render();};
-$('dev').onchange=()=>{CUSTOM.dev=$('dev').value==='__custom';$('dev-custom').classList.toggle('on',CUSTOM.dev);render();};
-['epic-title','epic-link','story-title','story-link','dev-name','dev-stack'].forEach(id=>$(id).oninput=render);
-BLOCKS.forEach(bl=>$( 'b-'+bl.id).onchange=render);
+['epic-title','epic-link','story-title','story-link','story-tasks'].forEach(id=>$(id).oninput=render);
+BLOCKS.forEach(bl=>$('b-'+bl.id).onchange=render);
 $('dl').onclick=()=>{const blob=new Blob([build()],{type:'text/markdown'});const a=document.createElement('a');
  a.href=URL.createObjectURL(blob);a.download='agent.md';a.click();URL.revokeObjectURL(a.href);};
-$('dl-tpl').onclick=()=>{CUSTOM.epic=CUSTOM.story=CUSTOM.dev=false;
- const keep={};BLOCKS.forEach(bl=>keep[bl.id]=$( 'b-'+bl.id).checked);
- const saved=EPICS[0];const blob=new Blob([tplText()],{type:'text/markdown'});const a=document.createElement('a');
+$('dl-tpl').onclick=()=>{const blob=new Blob([tplText()],{type:'text/markdown'});const a=document.createElement('a');
  a.href=URL.createObjectURL(blob);a.download='agent-template.md';a.click();URL.revokeObjectURL(a.href);};
 function tplText(){const L=['# <repo>','# agent.md · шаблон · заполнить своими ссылками','','## Контекст',
- 'Эпик: <id> · <название> — <смысл>','PRD: <ссылка на PRD в Тайге> · версия зафиксирована',
- 'История: <US-id> · <название>','Критерий: <ссылка на историю в GitLab>','Разработчик: <имя> · <роль>','','## Порядок работы',
- '1. сначала /repo-map — карта репозитория','2. изменение → /verify-change','3. ветка: <feature/…> от integration',
- '4. `make test ./...` — зелёные до коммита','','## Скиллы и MCP','скиллы: <по имени> · хаб: <подключение>','',
- '## Правила работы','плейбук: <ссылка> (ветки · тесты · ревью)','','## Границы',
+ 'Эпик: <id> · <название> — <смысл>','PRD эпика: <URL документа PRD в Тайге>','User Story: <название> (<US-id>)',
+ '  <URL истории в GitLab>','Критерий: <текст критерия>','','## Задачи в работе',
+ '- <TASK-ID> · <статус>','- <TASK-ID> · <статус>','','## Порядок работы',
+ '1. сначала /repo-map — карта репозитория','2. изменение → /verify-change','3. ветка: feature/<US-id>-iterate от integration',
+ '4. `make test ./...` — зелёные до коммита','','## Скиллы и MCP','скиллы: <по имени> — хаб: <URL репозитория>','',
+ '## Правила работы','плейбук (ветки · тесты · ревью): <URL репозитория>','','## Границы',
  '- main не трогать: merge принимает человек после preview','- секреты не выводить в ответ и лог',
  '- недоступный шаг фиксируем, обход не изобретаем','','# автоматизируется: файл создаётся при переводе карточки в работу'];
  return L.join('\n');}
